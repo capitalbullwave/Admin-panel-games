@@ -1,0 +1,167 @@
+"use client";
+
+import { useState } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Search, Plus, Filter, MoreVertical } from "lucide-react";
+
+export default function UsersPage() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+
+  const data = [
+    {
+        "Name": "Rajesh Kumar",
+        "Email": "rajesh@example.com",
+        "Mobile": "+91 9876543210",
+        "Balance": "₹4,500",
+        "Status": "Active",
+        "Joined": "2 Days ago"
+    },
+    {
+        "Name": "Amit Singh",
+        "Email": "amit.s@example.com",
+        "Mobile": "+91 9988776655",
+        "Balance": "₹12,000",
+        "Status": "Active",
+        "Joined": "1 Week ago"
+    },
+    {
+        "Name": "Priya Sharma",
+        "Email": "priya99@example.com",
+        "Mobile": "+91 9123456789",
+        "Balance": "₹350",
+        "Status": "Blocked",
+        "Joined": "1 Month ago"
+    },
+    {
+        "Name": "Vikram Patel",
+        "Email": "vikram.p@example.com",
+        "Mobile": "+91 9876512345",
+        "Balance": "₹8,900",
+        "Status": "Active",
+        "Joined": "3 Months ago"
+    },
+    {
+        "Name": "Neha Gupta",
+        "Email": "neha.g@example.com",
+        "Mobile": "+91 9001122334",
+        "Balance": "₹1,200",
+        "Status": "Active",
+        "Joined": "5 Months ago"
+    }
+];
+
+  const filteredData = (typeof data !== 'undefined' ? data : []).filter((row: any) => {
+
+    const searchStr = Object.values(row).join(" ").toLowerCase();
+
+    const matchesSearch = searchStr.includes(searchQuery.toLowerCase());
+
+    let matchesStatus = true;
+
+    if (statusFilter !== "All" && row["Status"]) {
+
+        if (statusFilter === "Active") matchesStatus = ["Active", "Approved", "Completed", "Success"].includes(row["Status"]);
+
+        else if (statusFilter === "Pending") matchesStatus = ["Pending", "In Progress", "Processing"].includes(row["Status"]);
+
+        else if (statusFilter === "Blocked") matchesStatus = ["Blocked", "Rejected", "Failed", "Maintenance"].includes(row["Status"]);
+
+    }
+
+    return matchesSearch && matchesStatus;
+
+  });
+
+
+
+  return (
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 className="text-3xl font-extrabold tracking-tight text-white">User Management</h2>
+          <p className="text-sm text-slate-400 mt-1">Manage platform users, view their balances and status.</p>
+        </div>
+        <div className="flex items-center gap-3">
+          
+          <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white shadow-[0_0_15px_rgba(245,158,11,0.3)] text-sm font-medium transition-all">
+            <Plus className="h-4 w-4" />
+            Add New
+          </button>
+        </div>
+      </div>
+
+      <Card className="border-white/10 bg-white/5 backdrop-blur-md shadow-xl overflow-hidden">
+        <CardHeader className="border-b border-white/5 pb-4 bg-white/[0.02] flex flex-row items-center justify-between">
+          <div className="relative w-full max-w-sm">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <input 
+              type="text" 
+              placeholder="Search..." 
+              className="w-full pl-10 pr-4 py-2 rounded-lg bg-black/20 border border-white/10 text-white text-sm focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all placeholder:text-slate-500"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+        
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/80 dark:bg-[#111111]/80 border border-slate-200 dark:border-white/5 hover:bg-slate-100 dark:bg-white/5 text-slate-900 dark:text-white text-sm font-medium transition-colors">
+              <Filter className="h-4 w-4" />
+              {statusFilter === "All" ? "Filter" : statusFilter}
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-white dark:bg-[#111111] border-slate-200 dark:border-white/5">
+              <DropdownMenuItem className="cursor-pointer hover:bg-slate-100 dark:hover:bg-white/10" onClick={() => setStatusFilter("All")}>All</DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer hover:bg-slate-100 dark:hover:bg-white/10" onClick={() => setStatusFilter("Active")}>Active / Success</DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer hover:bg-slate-100 dark:hover:bg-white/10" onClick={() => setStatusFilter("Pending")}>Pending / Processing</DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer hover:bg-slate-100 dark:hover:bg-white/10" onClick={() => setStatusFilter("Blocked")}>Blocked / Failed</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left">
+              <thead className="text-xs text-slate-400 uppercase bg-black/20 border-b border-white/5">
+                <tr>
+                  <th className="px-6 py-4 font-semibold">Name</th>
+                  <th className="px-6 py-4 font-semibold">Email</th>
+                  <th className="px-6 py-4 font-semibold">Mobile</th>
+                  <th className="px-6 py-4 font-semibold">Balance</th>
+                  <th className="px-6 py-4 font-semibold">Status</th>
+                  <th className="px-6 py-4 font-semibold">Joined</th>
+                  <th className="px-6 py-4 font-semibold text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {filteredData.map((row, i) => (
+                  <tr key={i} className="hover:bg-white/5 transition-colors group">
+                    <td className="px-6 py-4 font-medium text-white group-hover:text-amber-400 transition-colors">{row["Name"]}</td>\n                    <td className="px-6 py-4 text-slate-300">{row["Email"]}</td>\n                    <td className="px-6 py-4 text-slate-300">{row["Mobile"]}</td>\n                    <td className="px-6 py-4 text-slate-300">{row["Balance"]}</td>\n                    <td className="px-6 py-4"><span className={`px-2.5 py-1 rounded-full text-xs font-medium ${row["Status"] === "Active" || row["Status"] === "Completed" || row["Status"] === "Approved" ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/20" : row["Status"] === "Pending" || row["Status"] === "In Progress" || row["Status"] === "Maintenance" || row["Status"] === "Open" ? "bg-amber-500/20 text-amber-400 border border-amber-500/20" : "bg-red-500/20 text-red-400 border border-red-500/20"}`}>{row["Status"]}</span></td>\n                    <td className="px-6 py-4 text-slate-300">{row["Joined"]}</td>
+                    <td className="px-6 py-4 text-right">
+                      <button className="p-1 rounded-md hover:bg-white/10 text-slate-400 hover:text-white transition-colors">
+                        <MoreVertical className="h-4 w-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          
+          <div className="flex items-center justify-between px-6 py-4 border-t border-white/5 bg-black/10">
+            <span className="text-sm text-slate-400">Showing 1 to 5 of 5 entries</span>
+            <div className="flex items-center gap-2">
+              <button className="px-3 py-1 rounded-md bg-white/5 border border-white/10 text-slate-400 hover:text-white hover:bg-white/10 disabled:opacity-50 text-sm">Prev</button>
+              <button className="px-3 py-1 rounded-md bg-amber-500/20 border border-amber-500/30 text-amber-400 text-sm">1</button>
+              <button className="px-3 py-1 rounded-md bg-white/5 border border-white/10 text-slate-400 hover:text-white hover:bg-white/10 text-sm">Next</button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
